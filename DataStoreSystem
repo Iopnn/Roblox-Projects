@@ -1,0 +1,61 @@
+-- This a simple editable DataStoreSystem to save your datas
+
+local DSS = game:GetService("DataStoreService")
+local PlayerData = DSS:GetDataStore("PlayerData1") -- This is the name of the DataStore
+
+local function OnPlayerJoin(player) -- Connect a function to the PlayerJoin event
+	local ls = Instance.new("Folder") -- Create the leaderstats folder
+	ls.Name = "PlayerStats" -- Change name to "leaderstats" for it to show top right
+	ls.Parent = player
+
+	local Clicks = Instance.new("IntValue") -- Value 1
+	Clicks.Name = "Clicks"
+	Clicks.Parent = ls
+
+	local Multiplier = Instance.new("IntValue") -- Value 2
+	Multiplier.Name = "Multiplier"
+	Multiplier.Parent = ls
+
+	local plrUserId = "Player_" .. player.UserId -- Create a special "key" for the datastore to access data and save data to
+
+	local data = PlayerData:GetAsync(plrUserId) -- Fetch the data in the datastore with the playerKey
+	if data then
+		Clicks.Value = data["Clicks"]
+		Multiplier.Value = data["Multiplier"]
+	else
+		Clicks.Value = 0
+		Multiplier.Value = 0
+	end
+end
+
+local function Create_table(player)
+	local player_stats = {}
+	for _, stats in pairs(player.PlayerStats:GetChildren()) do
+		if stats:IsA("IntValue") then
+			player_stats[stats.Name] = stats.Value
+		elseif stats:IsA("Folder") then
+			for _, subStat in pairs(stats:GetChildren()) do
+				if subStat:IsA("IntValue") then
+					player_stats[subStat.Name] = subStat.Value
+				end
+			end
+		end
+	end
+	
+	return player_stats
+end
+
+local function OnPlayerExit(player) -- Function on PlayerExit event
+	local player_stats = Create_table(player)
+	local success, err = pcall(function()
+		local plrUserId = "Player_" .. player.UserId
+		PlayerData:SetAsync(plrUserId, player_stats) -- Set(Save the data) with the same key again to fetch it back when loading in
+	end)
+
+	if not success then
+		print("Couldnt save player's data")
+	end
+end
+
+game.Players.PlayerAdded:Connect(OnPlayerJoin) -- PlayerJoin event
+game.Players.PlayerRemoving:Connect(OnPlayerExit) -- PlayerExit event
