@@ -1,0 +1,60 @@
+-- This a way more complex way of saving data using ProfileSystem which is better and more reliable
+local Players = game:GetService("Players")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Modules = ServerScriptService:WaitForChild("Modules")
+
+local ProfileServer = require(Modules:WaitForChild("ProfileService")) -- This is an import you gotta do and make sure its in ServerScriptService in a file or not
+local Template = require(script:WaitForChild("Template"))
+local LeaderStats = require(script:WaitForChild("LeaderStats"))
+
+local dataKey = "_DataStore6" -- Change this to reset data for everyone
+local ProfileStore = ProfileServer.GetProfileStore(dataKey, Template) -- Get the data from the key
+
+local DataManager = {}
+DataManager.Profiles = {}
+DataManager.Key = dataKey
+
+local function PlayerAdded(player : Player) -- On player added event to get data
+	local profile = ProfileStore:LoadProfileAsync("Player_" .. player.UserId)
+	
+	if profile ~= nil then
+		profile:AddUserId(player.UserId)
+		profile:Reconcile()
+		
+		profile:ListenToRelease(function()
+			DataManager.Profiles[player] = nil
+			player:Kick()
+		end)
+		
+		if player:IsDescendantOf(Players) then
+			DataManager.Profiles[player] = profile
+			LeaderStats:Create(player, profile)
+		else
+			profile:Release()
+		end
+	else
+		player:Kick()
+	end
+	
+	warn(profile.Data)
+end
+
+local function PlayerRemoving(player : Player) -- On player exit to save data
+	local profile = DataManager.Profiles[player]
+	
+	warn(profile.Data) -- Print out the whole table of values to kind of "debug" them and see what they do
+	
+	if profile ~= nil then
+		profile:Release() -- Unbind player from profile and save the data that were in the profile
+	end
+end
+
+for _, player in Players:GetPlayers() do
+	task.spawn(PlayerAdded, player)
+end
+
+Players.PlayerAdded:Connect(PlayerAdded)
+Players.PlayerRemoving:Connect(PlayerRemoving)
+
+return DataManager
