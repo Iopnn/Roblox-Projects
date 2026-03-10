@@ -1,0 +1,38 @@
+class Tower:
+    def __init__(self, Name: str, Health: int, Damage: int) -> None:
+        self.Name = Name
+        self.Health = Health
+        self.Damage = Damage
+        self.Position = None
+
+    def SetupTowers(self):
+        name = self.Name
+        NewTower = {
+            "Name" : self.Name,
+            "Health" :  self.Health,
+            "Damage" : self.Damage,
+        }
+        return NewTower
+    
+    def PlaceTower(self, Position):
+        self.Position = Position
+    
+    def Attack(self, Enemy):
+        Enemy.Health -= self.Damage
+        
+    def IsDestroyed(self):
+        if self.Health <= 0:
+            return True
+        else:
+            return False
+        
+    def ShowStats(self):
+        print(f"Name: {self.Name}")
+        print(f"Health: {self.Health}")
+        print(f"Damage: {self.Damage}")
+    
+    def InRange(self, Enemy, Range):
+        if abs(self.Position - Enemy.Position) <= Range:
+            return True
+        else:
+            return False
