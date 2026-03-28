@@ -1,0 +1,81 @@
+local Chances = {}
+
+Chances.Rarities = {
+	"Common",
+	"Uncommon",
+	"Rare",
+	"Epic",
+	"Legendary",
+}
+
+Chances.UnitChances = {
+	["Common"] = 50,
+	["Uncommon"] = 30,
+	["Rare"] = 15,
+	["Epic"] = 4,
+	["Legendary"] = 1
+}
+
+
+-- Functions
+
+function Chances.GetAllRarities() -- Sends all the raritier to further code
+	return Chances.Rarities
+end
+
+function Chances.GetAllChances() -- Sends all the chances to further code
+	return Chances.UnitChances
+end
+
+function Chances.GetChanceByRarity(rarity) -- Sends a rarity it to further code
+	return Chances.UnitChances[rarity]
+end
+
+return Chances
+
+
+local ServerStorage = game:GetService("ServerStorage")
+
+-- This is enemy configuration for tower defense styled games using modules again
+local EnemyConfig = {}
+
+EnemyConfig.Enemies = {
+	["BasicEnemy"] = { 
+		EnemyName = "Basic Enemy", -- Name
+		Type = "Ground", -- Ground or Air
+		Health = 100, -- Health of the enemy
+		Speed = 4, -- Speed of the enemy
+		IsBoss = false, -- Indicate if its a boss enemy or not
+		WalkAnimation = 180426354, -- Editable
+		Model = ServerStorage.Enemies.BasicEnemy, -- Location of model
+	},
+	["BrainrotEnemy"] = { 
+		EnemyName = "Brainrot Enemy",
+		Type = "Ground",
+		Health = 200,
+		Speed = 5,
+		IsBoss = false,
+		WalkAnimation = 180426354,
+		Model = ServerStorage.Enemies.BrainrotEnemy,
+	},
+	["FastEnemy"] = {
+		EnemyName = "Fast Enemy",
+		Type = "Ground",
+		Health = 50,
+		Speed = 6,
+		IsBoss = false,
+		WalkAnimation = 180426354,
+		Model = ServerStorage.Enemies.FastEnemy,
+	},
+	["BossEnemy"] = {
+		EnemyName = "Boss Enemy",
+		Type = "Ground",
+		Health = 500,
+		Speed = 2,
+		IsBoss = true,
+		WalkAnimation = 180426354,
+		Model = ServerStorage.Enemies.BossEnemy
+	}
+}
+
+return EnemyConfig
